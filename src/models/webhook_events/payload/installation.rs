@@ -1,12 +1,13 @@
 use serde::{Deserialize, Serialize};
 
-use crate::models::webhook_events::InstallationEventRepository;
+use crate::models::{webhook_events::InstallationEventRepository, Installation};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct InstallationWebhookEventPayload {
     pub action: InstallationWebhookEventAction,
     pub enterprise: Option<serde_json::Value>,
+    pub installation: Installation,
     #[serde(default)]
     pub repositories: Option<Vec<InstallationEventRepository>>,
     pub requester: Option<serde_json::Value>,
