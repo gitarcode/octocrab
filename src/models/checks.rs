@@ -49,15 +49,15 @@ pub struct CheckSuite {
     pub url: String,
     pub before: String,
     pub after: String,
-    app: Option<App>,
+    pub app: Option<App>,
     pub repository: Repository,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub updated_at: chrono::DateTime<chrono::Utc>,
     pub head_commit: HeadCommit,
-    latest_check_runs_count: i64,
-    check_runs_url: String,
-    rerequestable: Option<bool>,
-    runs_rerequestable: Option<bool>,
+    pub latest_check_runs_count: i64,
+    pub check_runs_url: String,
+    pub rerequestable: Option<bool>,
+    pub runs_rerequestable: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
