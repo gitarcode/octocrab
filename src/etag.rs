@@ -7,7 +7,7 @@ use std::{
 use http::header::{HeaderMap, InvalidHeaderValue};
 
 /// Represents resources identified by etags.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, typed_builder::TypedBuilder)]
 pub struct Etagged<T> {
     /// A possible etag.
     ///
@@ -54,7 +54,7 @@ pub struct Etagged<T> {
 /// | `W/"1"` | `W/"2"` | no match          | no match        |
 /// | `W/"1"` | `"1"`   | no match          | match           |
 /// | `"1"`   | `"1"`   | match             | match           |
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, typed_builder::TypedBuilder)]
 pub struct EntityTag {
     /// Weakness indicator for the tag
     pub weak: bool,

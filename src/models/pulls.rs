@@ -1,240 +1,309 @@
 use super::*;
 use crate::models::commits::CommentReactions;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct PullRequest {
     pub url: String,
     pub id: PullRequestId,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub node_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub html_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub diff_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub patch_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub issue_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub commits_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub review_comments_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub review_comment_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub comments_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub statuses_url: Option<Url>,
     /// The pull request number.  Note that GitHub's REST API
     /// considers every pull-request an issue with the same number.
     pub number: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub state: Option<IssueState>,
     #[serde(default)]
     pub locked: bool,
     #[serde(default)]
     pub maintainer_can_modify: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub user: Option<Box<Author>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub body: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub body_text: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub body_html: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub labels: Option<Vec<Label>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub milestone: Option<Box<Milestone>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub active_lock_reason: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub closed_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub mergeable: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub mergeable_state: Option<MergeableState>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub merged: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub merged_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub merged_by: Option<Box<Author>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub merge_commit_sha: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub assignee: Option<Box<Author>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub assignees: Option<Vec<Author>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub requested_reviewers: Option<Vec<Author>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub requested_teams: Option<Vec<teams::RequestedTeam>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub rebaseable: Option<bool>,
     pub head: Box<Head>,
     pub base: Box<Base>,
     #[serde(rename = "_links")]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub links: Option<Box<Links>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub author_association: Option<AuthorAssociation>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub draft: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub repo: Option<Box<Repository>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub additions: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub deletions: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub changed_files: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub commits: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub review_comments: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub comments: Option<u64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Head {
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub label: Option<String>,
     #[serde(rename = "ref")]
     pub ref_field: String,
     pub sha: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub user: Option<Author>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub repo: Option<Repository>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Base {
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub label: Option<String>,
     #[serde(rename = "ref")]
     pub ref_field: String,
     pub sha: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub user: Option<Author>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub repo: Option<Repository>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Links {
     #[serde(rename = "self")]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub self_link: Option<SelfLink>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub html_link: Option<HtmlLink>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub issue_link: Option<IssueLink>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub comments_link: Option<CommentsLink>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub review_comments_link: Option<ReviewCommentsLink>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub review_comment_link: Option<ReviewCommentLink>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub commits_link: Option<CommitsLink>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub statuses_link: Option<StatusesLink>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     #[serde(rename = "pull_request")]
+    #[builder(default)]
     pub pull_request_link: Option<PullRequestLink>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct SelfLink {
     pub href: Url,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct HtmlLink {
     pub href: Url,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct IssueLink {
     pub href: Url,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct CommentsLink {
     pub href: Url,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct ReviewCommentsLink {
     pub href: Url,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct ReviewCommentLink {
     pub href: Url,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct CommitsLink {
     pub href: Url,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct StatusesLink {
     pub href: Url,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct PullRequestLink {
     pub href: Url,
 }
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Review {
     pub id: ReviewId,
     pub node_id: String,
     pub html_url: Url,
+    #[builder(default)]
     pub user: Option<Author>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub body: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub body_text: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub body_html: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub commit_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub state: Option<ReviewState>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub pull_request_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub submitted_at: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(rename = "_links")]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub links: Option<Links>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub author_association: Option<AuthorAssociation>,
 }
 
@@ -259,10 +328,11 @@ pub enum ReviewAction {
     Comment,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Comment {
     pub url: Url,
+    #[builder(default)]
     pub pull_request_review_id: Option<ReviewId>,
     pub id: CommentId,
     pub node_id: String,
@@ -273,6 +343,7 @@ pub struct Comment {
     pub commit_id: String,
     pub original_commit_id: String,
     #[serde(default)]
+    #[builder(default)]
     pub in_reply_to_id: Option<CommentId>,
     pub user: Option<Author>,
     pub body: String,
@@ -282,16 +353,22 @@ pub struct Comment {
     pub author_association: AuthorAssociation,
     #[serde(rename = "_links")]
     pub links: Links,
+    #[builder(default)]
     pub start_line: Option<u64>,
+    #[builder(default)]
     pub original_start_line: Option<u64>,
+    #[builder(default)]
     pub start_side: Option<String>,
+    #[builder(default)]
     pub line: Option<u64>,
+    #[builder(default)]
     pub original_line: Option<u64>,
+    #[builder(default)]
     pub side: Option<String>,
 }
 
 ///Legacy Review Comment
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct ReviewComment {
     pub url: Url,
@@ -305,6 +382,7 @@ pub struct ReviewComment {
     pub commit_id: String,
     pub original_commit_id: String,
     #[serde(default)]
+    #[builder(default)]
     pub in_reply_to_id: Option<CommentId>,
     pub user: Option<Author>,
     pub body: String,
@@ -316,16 +394,25 @@ pub struct ReviewComment {
     #[serde(rename = "_links")]
     pub links: Links,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub body_text: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub body_html: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub reactions: Option<CommentReactions>,
+    #[builder(default)]
     pub side: Option<Side>,
+    #[builder(default)]
     pub start_side: Option<Side>,
+    #[builder(default)]
     pub line: Option<u64>,
+    #[builder(default)]
     pub original_line: Option<u64>,
+    #[builder(default)]
     pub start_line: Option<u64>,
+    #[builder(default)]
     pub original_start_line: Option<u64>,
 }
 
@@ -338,7 +425,7 @@ pub enum Side {
 }
 
 /// A Thread in a pull request review
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Thread {
     pub comments: Vec<Comment>,
@@ -449,11 +536,13 @@ pub enum PullRequestAction {
     Reopened,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
 pub struct Merge {
+    #[builder(default)]
     pub sha: Option<String>,
+    #[builder(default)]
     pub message: Option<String>,
     pub merged: bool,
 }
