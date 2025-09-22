@@ -34,17 +34,21 @@ cfg_if::cfg_if! {
 /// # }
 /// ```
 #[non_exhaustive]
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, typed_builder::TypedBuilder)]
 pub struct Page<T> {
     pub items: Vec<T>,
     pub incomplete_results: Option<bool>,
     pub total_count: Option<u64>,
+    #[builder(!default, setter(into))]
     #[serde(serialize_with = "serialize_url")]
     pub next: Option<Uri>,
+    #[builder(!default, setter(into))]
     #[serde(serialize_with = "serialize_url")]
     pub prev: Option<Uri>,
+    #[builder(!default, setter(into))]
     #[serde(serialize_with = "serialize_url")]
     pub first: Option<Uri>,
+    #[builder(!default, setter(into))]
     #[serde(serialize_with = "serialize_url")]
     pub last: Option<Uri>,
 }
