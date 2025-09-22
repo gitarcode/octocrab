@@ -12,7 +12,7 @@ use web_time::{Duration, SystemTime};
 use snafu::*;
 
 /// The data necessary to authenticate as a Github App
-#[derive(Clone)]
+#[derive(Clone, typed_builder::TypedBuilder)]
 pub struct AppAuth {
     /// Github's app ID
     pub app_id: AppId,
@@ -94,25 +94,31 @@ impl AppAuth {
 }
 
 /// The data necessary to authenticate as a GitHub OAuth app.
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Deserialize, typed_builder::TypedBuilder)]
 #[serde(from = "OAuthWire")]
 pub struct OAuth {
     pub access_token: SecretString,
     pub token_type: String,
     pub scope: Vec<String>,
+    #[builder(default)]
     pub expires_in: Option<usize>,
+    #[builder(default)]
     pub refresh_token: Option<SecretString>,
+    #[builder(default)]
     pub refresh_token_expires_in: Option<usize>,
 }
 
 /// The wire format of the OAuth struct.
-#[derive(Deserialize)]
+#[derive(Deserialize, typed_builder::TypedBuilder)]
 struct OAuthWire {
     access_token: String,
     token_type: String,
     scope: String,
+    #[builder(default)]
     expires_in: Option<usize>,
+    #[builder(default)]
     refresh_token: Option<String>,
+    #[builder(default)]
     refresh_token_expires_in: Option<usize>,
 }
 
@@ -180,7 +186,7 @@ impl crate::Octocrab {
 /// The device codes as returned from step 1 of Github's device flow.
 ///
 /// See <https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps#response-parameters>
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct DeviceCodes {
     /// The device verification code is 40 characters and used to verify the device.

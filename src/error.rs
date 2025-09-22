@@ -99,7 +99,7 @@ pub enum Error {
 }
 
 /// An error returned from GitHub's API.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct GitHubError {
     pub documentation_url: Option<String>,
