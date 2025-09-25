@@ -11,14 +11,17 @@ pub mod dependabot;
 pub mod secret_scanning_alert;
 pub mod secrets;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
 pub struct Ref {
     #[serde(rename = "ref")]
     pub ref_field: String,
     pub node_id: String,
+    #[builder(!default)]
     pub url: Url,
+    #[builder(!default)]
     pub object: Object,
 }
 
@@ -31,7 +34,8 @@ pub enum Object {
     Tag { sha: String, url: Url },
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 #[non_exhaustive]
 pub struct RepoCommit {
     pub url: String,
@@ -39,6 +43,7 @@ pub struct RepoCommit {
     pub node_id: String,
     pub html_url: String,
     pub comments_url: String,
+    #[builder(!default)]
     pub commit: RepoCommitPage,
     #[serde(deserialize_with = "maybe_empty::deserialize")]
     pub author: Option<Author>,
@@ -53,21 +58,25 @@ pub struct RepoCommit {
     pub files: Option<Vec<DiffEntry>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 #[non_exhaustive]
 pub struct RepoCommitPage {
+    #[builder(!default)]
     pub url: Url,
     pub author: Option<CommitAuthor>,
     pub committer: Option<CommitAuthor>,
     pub message: String,
     pub comment_count: u64,
+    #[builder(!default)]
     pub tree: CommitObject,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub verification: Option<Verification>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 #[non_exhaustive]
 pub struct Verification {
     pub verified: bool,
@@ -76,12 +85,14 @@ pub struct Verification {
     pub signature: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 #[non_exhaustive]
 pub struct DiffEntry {
     // unlike the schema online, this can be null if only metadata changed
     pub sha: Option<String>,
     pub filename: String,
+    #[builder(!default)]
     pub status: DiffEntryStatus,
     pub additions: u64,
     pub deletions: u64,
@@ -91,6 +102,7 @@ pub struct DiffEntry {
     // unlike the schema online, this can be null
     pub raw_url: Option<String>,
     // never null
+    #[builder(!default)]
     pub contents_url: Url,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -114,14 +126,16 @@ pub enum DiffEntryStatus {
 }
 
 #[non_exhaustive]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 pub struct RepoChangeStatus {
     pub total: Option<u64>,
     pub additions: Option<u64>,
     pub deletions: Option<u64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 #[non_exhaustive]
 pub struct Commit {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -141,9 +155,11 @@ pub struct Commit {
 }
 
 /// The author of a commit, identified by its name and email, as well as (optionally) a time and a github username
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 pub struct GitUserTime {
     #[serde(flatten)]
+    #[builder(default = CommitAuthor::builder().build())]
     pub user: CommitAuthor,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -154,7 +170,8 @@ pub struct GitUserTime {
 }
 
 /// The author of a commit, identified by its name and email.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 #[serde(rename_all = "snake_case")]
 pub struct CommitAuthor {
     pub name: String,
@@ -163,21 +180,27 @@ pub struct CommitAuthor {
     pub date: Option<DateTime<Utc>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 #[serde(rename_all = "snake_case")]
 pub struct FileUpdate {
+    #[builder(!default)]
     pub content: Content,
+    #[builder(default = Commit::builder().build())]
     pub commit: Commit,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 #[serde(rename_all = "snake_case")]
 pub struct FileDeletion {
     pub content: Option<Content>,
+    #[builder(default = Commit::builder().build())]
     pub commit: Commit,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 #[serde(rename_all = "snake_case")]
 pub struct Content {
     pub name: String,
@@ -194,11 +217,13 @@ pub struct Content {
     pub download_url: Option<String>,
     pub r#type: String,
     #[serde(rename = "_links")]
+    #[builder(!default)]
     pub links: ContentLinks,
     pub license: Option<License>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 pub struct ContentItems {
     pub items: Vec<Content>,
 }
@@ -261,12 +286,14 @@ impl crate::FromResponse for ContentItems {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 #[serde(rename_all = "snake_case")]
 pub struct ContentLinks {
     pub git: Option<Url>,
     pub html: Option<Url>,
     #[serde(rename = "self")]
+    #[builder(!default)]
     pub _self: Url,
 }
 
@@ -290,11 +317,13 @@ pub struct Tag {
     pub node_id: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
 pub struct CommitObject {
     pub sha: String,
+    #[builder(!default)]
     pub url: Url,
 }
 
