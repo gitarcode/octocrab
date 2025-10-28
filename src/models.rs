@@ -16,11 +16,13 @@ pub mod actions;
 pub mod activity;
 pub mod apps;
 pub mod checks;
+pub mod classroom;
 pub mod code_scannings;
 pub mod commits;
 pub mod events;
 pub mod gists;
 pub mod hooks;
+pub mod interaction_limits;
 pub mod issues;
 pub mod orgs;
 pub mod pulls;
@@ -140,7 +142,9 @@ id_type!(
     UserId,
     UserOrOrgId,
     WorkflowId,
-    TeamInvitationId
+    TeamInvitationId,
+    AssignmentId,
+    ClassroomId
 );
 
 macro_rules! convert_into {
@@ -521,6 +525,21 @@ pub struct UserProfile {
     pub following: u64,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+}
+
+/// Data for updating a user profile,
+/// e.g. name, email, company, location, bio, blog, twitter, hireable
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
+pub struct UpdateUserProfile {
+    pub name: Option<String>,
+    pub email: Option<String>,
+    pub blog: Option<String>,
+    pub twitter_username: Option<String>,
+    pub company: Option<String>,
+    pub location: Option<String>,
+    pub hireable: Option<bool>,
+    pub bio: Option<String>,
 }
 
 /// The simple profile for a GitHub user

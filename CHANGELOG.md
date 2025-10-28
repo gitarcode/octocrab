@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.47.0](https://github.com/XAMPPRocky/octocrab/compare/v0.46.0...v0.47.0) - 2025-10-06
+
+### Added
+
+- add `immutable` Release field ([#806](https://github.com/XAMPPRocky/octocrab/pull/806))
+
+### Other
+
+- added creating a review (POST "/repos/{owner}/{repo}/pulls/{pull_number}/reviews") ([#805](https://github.com/XAMPPRocky/octocrab/pull/805))
+
+## [0.46.0](https://github.com/XAMPPRocky/octocrab/compare/v0.45.0...v0.46.0) - 2025-09-28
+
+### Fixed
+
+- [**breaking**] make CommitAuthor email nullable ([#799](https://github.com/XAMPPRocky/octocrab/pull/799))
+
+### Other
+
+- Expose `digest` field in Asset model ([#804](https://github.com/XAMPPRocky/octocrab/pull/804))
+- cargo clippy ([#803](https://github.com/XAMPPRocky/octocrab/pull/803))
+- fix doc url for ProjectHandler ([#802](https://github.com/XAMPPRocky/octocrab/pull/802))
+
+## [0.45.0](https://github.com/XAMPPRocky/octocrab/compare/v0.44.1...v0.45.0) - 2025-09-14
+
+### Added
+
+- add `redelivery` field for hook deliveries ([#797](https://github.com/XAMPPRocky/octocrab/pull/797))
+- added PATCH /user ([#792](https://github.com/XAMPPRocky/octocrab/pull/792))
+
+### Fixed
+
+- [**breaking**] change some fields to optional types in CheckSuite struct ([#784](https://github.com/XAMPPRocky/octocrab/pull/784))
+
+### Other
+
+- :repos::Commit -> models::commits::Commit ([#781](https://github.com/XAMPPRocky/octocrab/pull/781))
+- cargo clippy --fix ([#783](https://github.com/XAMPPRocky/octocrab/pull/783))
+- cargo clippy --fix ([#774](https://github.com/XAMPPRocky/octocrab/pull/774))
+
 ## [0.44.1](https://github.com/XAMPPRocky/octocrab/compare/v0.44.0...v0.44.1) - 2025-05-06
 
 ### Fixed
