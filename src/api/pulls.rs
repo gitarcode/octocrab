@@ -257,7 +257,7 @@ impl<'octo> PullRequestHandler<'octo> {
     /// # Ok(())
     /// # }
     /// ```
-    pub fn list(&self) -> list::ListPullRequestsBuilder {
+    pub fn list(&self) -> list::ListPullRequestsBuilder<'_, '_> {
         list::ListPullRequestsBuilder::new(self)
     }
 
@@ -386,7 +386,7 @@ impl<'octo> PullRequestHandler<'octo> {
     /// # Ok(())
     /// # }
     /// ```
-    pub fn list_comments(&self, pr: Option<u64>) -> comment::ListCommentsBuilder {
+    pub fn list_comments(&self, pr: Option<u64>) -> comment::ListCommentsBuilder<'_, '_> {
         comment::ListCommentsBuilder::new(self, pr)
     }
 
@@ -435,7 +435,7 @@ impl<'octo> PullRequestHandler<'octo> {
     ///     comment
     ///  }
     /// ```
-    pub fn comment(&self, comment_id: CommentId) -> comment::CommentBuilder {
+    pub fn comment(&self, comment_id: CommentId) -> comment::CommentBuilder<'_, '_> {
         comment::CommentBuilder::new(self, comment_id)
     }
 
@@ -453,7 +453,7 @@ impl<'octo> PullRequestHandler<'octo> {
         note = "specific PR builder transitioned to pr_review_actions, pr_commits, reply_to_comment"
     )]
     //FIXME: remove?
-    pub fn pull_number(&self, pull_nr: u64) -> SpecificPullRequestBuilder {
+    pub fn pull_number(&self, pull_nr: u64) -> SpecificPullRequestBuilder<'_, '_> {
         SpecificPullRequestBuilder::new(self, pull_nr)
     }
 
@@ -543,7 +543,7 @@ impl<'octo> PullRequestHandler<'octo> {
     /// # Ok(())
     /// # }
     /// ```
-    pub fn merge(&self, pr: u64) -> merge::MergePullRequestsBuilder {
+    pub fn merge(&self, pr: u64) -> merge::MergePullRequestsBuilder<'_, '_> {
         merge::MergePullRequestsBuilder::new(self, pr)
     }
 }

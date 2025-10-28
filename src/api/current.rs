@@ -1,5 +1,9 @@
 //! Get data about the currently authenticated user.
 
+use crate::models::interaction_limits::{
+    InteractionLimit, InteractionLimitExpiry, InteractionLimitType,
+};
+use crate::models::{interaction_limits, UpdateUserProfile};
 use crate::{
     models::{self, gists::Gist, orgs::MembershipInvitation, Installation, Repository},
     Octocrab, Page, Result,
@@ -23,6 +27,21 @@ impl<'octo> CurrentAuthHandler<'octo> {
     /// Fetches information about the current user.
     pub async fn user(&self) -> Result<models::Author> {
         self.crab.get("/user", None::<&()>).await
+    }
+
+    /// ### Update the authenticated user
+    ///
+    ///works with the following fine-grained token types:
+    ///
+    /// * [GitHub App user access tokens](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app)
+    /// * [Fine-grained personal access tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token)
+    ///
+    /// The fine-grained token must have the following permission set:
+    ///
+    /// * "Profile" user permissions (write)
+    pub async fn update_user(&self, new_data: UpdateUserProfile) -> Result<models::Author> {
+        let params = serde_json::to_value(new_data).unwrap();
+        self.crab.patch("/user", Some(&params)).await
     }
 
     /// Fetches information about the currently authenticated app.
@@ -162,6 +181,77 @@ impl<'octo> CurrentAuthHandler<'octo> {
         &self,
     ) -> ListOrgMembershipsForAuthenticatedUserBuilder<'octo> {
         ListOrgMembershipsForAuthenticatedUserBuilder::new(self.crab)
+    }
+
+    /// ### Get interaction restrictions for your public repositories
+    ///
+    /// Shows which type of GitHub user can interact with your public repositories and when the restriction expires.
+    ///
+    /// Fine-grained access tokens for "Get interaction restrictions for your public repositories"
+    ///
+    /// This endpoint works with the following fine-grained token types:
+    ///
+    /// - GitHub App user access tokens
+    /// - Fine-grained personal access tokens
+    ///
+    /// The fine-grained token must have the following permission set:
+    ///
+    /// - "Interaction limits" user permissions (read)
+    ///
+    pub async fn get_interaction_restrictions(
+        &self,
+    ) -> crate::Result<interaction_limits::InteractionLimit> {
+        let route = "/user/interaction-limits";
+        self.crab.get(route, None::<&()>).await
+    }
+
+    /// ### Set interaction restrictions for your public repositories
+    ///
+    /// Temporarily restricts which type of GitHub user can interact with your public repositories. Setting the interaction limit at the user level will overwrite any interaction limits that are set for individual repositories owned by the user.
+    ///
+    /// Fine-grained access tokens for "Set interaction restrictions for your public repositories"
+    ///
+    /// This endpoint works with the following fine-grained token types:
+    ///
+    /// - GitHub App user access tokens
+    /// - Fine-grained personal access tokens
+    ///
+    /// The fine-grained token must have the following permission set:
+    ///
+    /// - "Interaction limits" user permissions (write)
+    ///
+    pub async fn set_interaction_restrictions(
+        &self,
+        limit_type: InteractionLimitType,
+        expiry: InteractionLimitExpiry,
+    ) -> crate::Result<InteractionLimit> {
+        let route = "/user/interaction-limits";
+        let body = serde_json::json!({
+            "limit": limit_type,
+            "expiry": expiry,
+        });
+        self.crab.put(route, Some(&body)).await
+    }
+
+    /// ### Remove interaction restrictions from your public repositories
+    ///
+    /// Removes any interaction restrictions from your public repositories.
+    ///
+    /// Fine-grained access tokens for "Remove interaction restrictions from your public repositories"
+    ///
+    /// This endpoint works with the following fine-grained token types:
+    ///
+    /// - GitHub App user access tokens
+    /// - Fine-grained personal access tokens
+    ///
+    /// The fine-grained token must have the following permission set:
+    ///
+    /// - "Interaction limits" user permissions (write)
+    ///
+    pub async fn remove_interaction_restrictions(&self) -> crate::Result<()> {
+        let route = "/user/interaction-limits";
+        let response = self.crab._delete(route, None::<&()>).await?;
+        crate::map_github_error(response).await.map(drop)
     }
 }
 
