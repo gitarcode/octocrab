@@ -13,7 +13,7 @@ use crate::pulls::specific_pr::{SpecificPullRequestBuilder, SpecificPullRequestC
 use crate::{Octocrab, Page};
 
 pub use self::{
-    create::CreatePullRequestBuilder, list::ListPullRequestsBuilder,
+    comment::CreateCommentBuilder, create::CreatePullRequestBuilder, list::ListPullRequestsBuilder,
     update::UpdatePullRequestBuilder,
 };
 
@@ -277,6 +277,22 @@ impl<'octo> PullRequestHandler<'octo> {
         ListReviewsBuilder::new(self, pr_number)
     }
 
+    /// List all of the requested reviewers for a pull request.
+    /// ```no_run
+    /// # async fn run() -> octocrab::Result<()> {
+    /// let reviewers = octocrab::instance().pulls("owner", "repo")
+    /// .list_requested_reviewers(101)
+    /// .per_page(100)
+    /// .page(2u32)
+    /// .send()
+    /// .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn list_requested_reviewers(&self, pr_number: u64) -> ListRequestedReviewersBuilder {
+        ListRequestedReviewersBuilder::new(self, pr_number)
+    }
+
     /// Request a review from users or teams.
     /// ```no_run
     /// # async fn run() -> octocrab::Result<()> {
@@ -375,6 +391,38 @@ impl<'octo> PullRequestHandler<'octo> {
     /// ```
     pub fn list_comments(&self, pr: Option<u64>) -> comment::ListCommentsBuilder<'_, '_> {
         comment::ListCommentsBuilder::new(self, pr)
+    }
+
+    /// Creates a new `CreateCommentBuilder` that can be configured to create a
+    /// new `Comment` on a particular pull request.
+    /// ```no_run
+    /// # async fn run() -> octocrab::Result<()> {
+    /// # let octocrab = octocrab::Octocrab::default();
+    /// use octocrab::models::pulls::Side;
+    /// use octocrab::models::CommentId;
+    ///
+    /// let comment = octocrab.pulls("owner", "repo").create_comment(5, "commit_id", "body", "path")
+    ///     // Optional Parameters
+    ///     .position(5)
+    ///     .line(5)
+    ///     .side(Side::Right)
+    ///     .start_line(5)
+    ///     .start_side(Side::Right)
+    ///     .in_reply_to(CommentId(5))
+    ///     // Send the request
+    ///     .send()
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn create_comment(
+        &self,
+        pr: u64,
+        commit_id: impl Into<String>,
+        body: impl Into<String>,
+        path: impl Into<String>,
+    ) -> CreateCommentBuilder<'_, '_> {
+        CreateCommentBuilder::new(self, pr, commit_id.into(), body.into(), path.into())
     }
 
     ///creates a new `CommentBuilder` for GET/PATCH/DELETE requests
@@ -501,6 +549,55 @@ impl<'octo> PullRequestHandler<'octo> {
     /// ```
     pub fn merge(&self, pr: u64) -> merge::MergePullRequestsBuilder<'_, '_> {
         merge::MergePullRequestsBuilder::new(self, pr)
+    }
+}
+
+
+#[derive(serde::Serialize)]
+pub struct ListRequestedReviewersBuilder<'octo, 'r> {
+    #[serde(skip)]
+    handler: &'r PullRequestHandler<'octo>,
+    #[serde(skip)]
+    pr_number: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    per_page: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    page: Option<u32>,
+}
+
+impl<'octo, 'r> ListRequestedReviewersBuilder<'octo, 'r> {
+    pub(crate) fn new(handler: &'r PullRequestHandler<'octo>, pr_number: u64) -> Self {
+        Self {
+            handler,
+            pr_number,
+            per_page: None,
+            page: None,
+        }
+    }
+
+    /// Results per page (max 100).
+    /// Default: 30
+    pub fn per_page(mut self, per_page: impl Into<u8>) -> Self {
+        self.per_page = Some(per_page.into());
+        self
+    }
+
+    /// Page number of the results to fetch.
+    pub fn page(mut self, page: impl Into<u32>) -> Self {
+        self.page = Some(page.into());
+        self
+    }
+
+    /// Send the actual request.
+    pub async fn send(self) -> crate::Result<crate::models::pulls::ReviewRequest> {
+        let route = format!(
+            "/repos/{owner}/{repo}/pulls/{pr}/requested_reviewers",
+            owner = self.handler.owner,
+            repo = self.handler.repo,
+            pr = self.pr_number,
+        );
+
+        self.handler.http_get(route, Some(&self)).await
     }
 }
 

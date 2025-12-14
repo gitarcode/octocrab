@@ -30,12 +30,6 @@ pub struct Team {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
-pub struct RequestedReviewers {
-    pub users: Vec<Author>,
-    pub teams: Vec<Team>,
-}
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct RequestedTeam {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<TeamId>,
