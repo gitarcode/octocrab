@@ -8,6 +8,7 @@ use chrono::{DateTime, Utc};
 use serde::{de, Deserialize, Deserializer, Serialize};
 use url::Url;
 
+use crate::models::apps::AppIdWrapper;
 use crate::params::users::emails::EmailVisibilityState;
 pub use apps::App;
 
@@ -162,7 +163,7 @@ convert_into!(OrgId -> ActorId,
               UserId -> UserOrOrgId,
               PullRequestId -> IssueId);
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Contents {
     #[serde(rename = "type")]
@@ -318,7 +319,7 @@ pub enum IssueState {
     Closed,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct IssueEvent {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -349,7 +350,7 @@ pub struct IssueEvent {
     pub created_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct ProjectCard {
     pub id: CardId,
@@ -357,14 +358,17 @@ pub struct ProjectCard {
     pub project_id: ProjectId,
     pub project_url: Url,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub column_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub previous_column_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub column_url: Option<Url>,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Project {
     pub owner_url: Url,
@@ -375,13 +379,16 @@ pub struct Project {
     pub node_id: String,
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub body: Option<String>,
     pub number: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub state: Option<String>,
     pub creator: Author,
     pub created_at: DateTime<Utc>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub updated_at: Option<DateTime<Utc>>,
 }
 
@@ -392,7 +399,7 @@ pub enum ProjectCardContentType {
     PullRequest,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct ProjectColumn {
     pub url: Url,
@@ -403,23 +410,28 @@ pub struct ProjectColumn {
     pub name: String,
     pub created_at: DateTime<Utc>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub updated_at: Option<DateTime<Utc>>,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct IssuePullRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub html_url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub diff_url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub patch_url: Option<String>,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Author {
     pub login: String,
@@ -440,9 +452,12 @@ pub struct Author {
     pub received_events_url: Url,
     pub r#type: String,
     pub site_admin: bool,
+    #[builder(default)]
     pub name: Option<String>,
+    #[builder(default)]
     pub patch_url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub email: Option<String>,
 }
 
@@ -461,8 +476,25 @@ where
     }
 }
 
+/// If a URL is null or empty string, deserialize it as none
+pub fn empty_url_is_none<'de, D>(deserializer: D) -> Result<Option<Url>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    // try to deserialize as Option<String> to handle null values
+    let cast = Option::<String>::deserialize(deserializer)?;
+    match cast {
+        None => Ok(None), // null case
+        Some(s) if s.is_empty() => Ok(None), // empty string case
+        Some(s) => {
+            // try to parse the string as a URL
+            Url::parse(&s).map(Some).map_err(de::Error::custom)
+        }
+    }
+}
+
 /// The full profile for a user
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct UserProfile {
     pub login: String,
@@ -483,15 +515,23 @@ pub struct UserProfile {
     pub received_events_url: Url,
     pub r#type: String,
     pub site_admin: bool,
+    #[builder(default)]
     pub name: Option<String>,
+    #[builder(default)]
     pub company: Option<String>,
     #[serde(deserialize_with = "empty_string_is_none")]
+    #[builder(default)]
     pub blog: Option<String>,
+    #[builder(default)]
     pub location: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub email: Option<String>,
+    #[builder(default)]
     pub hireable: Option<bool>,
+    #[builder(default)]
     pub bio: Option<String>,
+    #[builder(default)]
     pub twitter_username: Option<String>,
     pub public_repos: u64,
     pub public_gists: u64,
@@ -517,12 +557,14 @@ pub struct UpdateUserProfile {
 }
 
 /// The simple profile for a GitHub user
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct SimpleUser {
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub email: Option<String>,
     pub login: String,
     pub id: UserId,
@@ -542,11 +584,12 @@ pub struct SimpleUser {
     pub received_events_url: Url,
     pub r#type: String,
     pub site_admin: bool,
+    #[builder(default)]
     pub starred_at: Option<DateTime<Utc>>,
 }
 
 /// A user that is following another user
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Follower {
     pub login: String,
@@ -567,11 +610,12 @@ pub struct Follower {
     pub received_events_url: Url,
     pub r#type: String,
     pub site_admin: bool,
+    #[builder(default)]
     pub patch_url: Option<String>,
 }
 
 /// A user that is being followed by another user
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Followee {
     pub login: String,
@@ -592,6 +636,7 @@ pub struct Followee {
     pub received_events_url: Url,
     pub r#type: String,
     pub site_admin: bool,
+    #[builder(default)]
     pub patch_url: Option<String>,
 }
 
@@ -611,7 +656,7 @@ pub enum AuthorAssociation {
     Other(String),
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Collaborator {
     #[serde(flatten)]
@@ -619,7 +664,7 @@ pub struct Collaborator {
     pub permissions: Permissions,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Contributor {
     #[serde(flatten)]
@@ -627,14 +672,16 @@ pub struct Contributor {
     pub contributions: u32,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct StarGazer {
+    #[builder(default)]
     pub starred_at: Option<DateTime<Utc>>,
+    #[builder(default)]
     pub user: Option<Author>,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Label {
     pub id: LabelId,
@@ -642,6 +689,7 @@ pub struct Label {
     pub url: Url,
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub description: Option<String>,
     pub color: String,
     pub default: bool,
@@ -677,45 +725,65 @@ pub struct Milestone {
     pub due_on: Option<DateTime<Utc>>,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
+#[builder(field_defaults(default))]
 pub struct Repository {
+    #[builder(!default)]
     pub id: RepositoryId,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub node_id: Option<String>,
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub full_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub owner: Option<Author>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub private: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub html_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub fork: Option<bool>,
+    #[builder(!default)]
     pub url: Url,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub archive_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub assignees_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub blobs_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub branches_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub collaborators_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub comments_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub commits_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub compare_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub contents_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub contributors_url: Option<Url>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deployments_url: Option<Url>,
@@ -881,7 +949,7 @@ pub struct RepositoryMetrics {
     pub content_reports_enabled: Option<bool>,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct License {
     pub key: String,
@@ -889,18 +957,27 @@ pub struct License {
     pub node_id: String,
     pub spdx_id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
     pub url: Option<Url>,
+    #[builder(default)]
     pub html_url: Option<Url>,
+    #[builder(default)]
     pub description: Option<String>,
+    #[builder(default)]
     pub implementation: Option<String>,
+    #[builder(default)]
     pub permissions: Option<Vec<String>>,
+    #[builder(default)]
     pub conditions: Option<Vec<String>>,
+    #[builder(default)]
     pub limitations: Option<Vec<String>>,
+    #[builder(default)]
     pub body: Option<String>,
+    #[builder(default)]
     pub featured: Option<bool>,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Code {
     pub name: String,
@@ -912,16 +989,19 @@ pub struct Code {
     pub repository: Repository,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
 #[non_exhaustive]
 pub struct Permissions {
     #[serde(default)]
+    #[builder(default)]
     pub admin: bool,
     pub push: bool,
     pub pull: bool,
     #[serde(default)]
+    #[builder(default)]
     pub triage: bool,
     #[serde(default)]
+    #[builder(default)]
     pub maintain: bool,
 }
 
@@ -957,6 +1037,8 @@ pub struct CheckRun {
     pub started_at: Option<DateTime<Utc>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub completed_at: Option<DateTime<Utc>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub app: Option<AppIdWrapper>,
 }
 
 #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]

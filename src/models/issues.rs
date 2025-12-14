@@ -43,12 +43,16 @@ pub struct Issue {
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, typed_builder::TypedBuilder)]
+#[builder(field_defaults(default))]
 #[non_exhaustive]
 pub struct Comment {
+    #[builder(!default, setter(into))]
     pub id: CommentId,
     pub node_id: String,
+    #[builder(!default)]
     pub url: Url,
+    #[builder(!default)]
     pub html_url: Url,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub issue_url: Option<Url>,
@@ -60,6 +64,7 @@ pub struct Comment {
     pub body_html: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub author_association: Option<AuthorAssociation>,
+    #[builder(!default)]
     pub user: Author,
     pub created_at: chrono::DateTime<chrono::Utc>,
     #[serde(skip_serializing_if = "Option::is_none")]
