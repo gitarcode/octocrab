@@ -439,7 +439,10 @@ pub struct Author {
     pub node_id: String,
     pub avatar_url: Url,
     pub gravatar_id: String,
-    pub url: Url,
+    #[serde(default, deserialize_with = "empty_url_is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
+    pub url: Option<Url>,
     pub html_url: Url,
     pub followers_url: Url,
     pub following_url: Url,
