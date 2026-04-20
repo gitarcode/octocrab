@@ -443,16 +443,46 @@ pub struct Author {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[builder(default)]
     pub url: Option<Url>,
-    pub html_url: Url,
-    pub followers_url: Url,
-    pub following_url: Url,
-    pub gists_url: Url,
-    pub starred_url: Url,
-    pub subscriptions_url: Url,
-    pub organizations_url: Url,
-    pub repos_url: Url,
-    pub events_url: Url,
-    pub received_events_url: Url,
+    #[serde(default, deserialize_with = "empty_url_is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
+    pub html_url: Option<Url>,
+    #[serde(default, deserialize_with = "empty_url_is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
+    pub followers_url: Option<Url>,
+    #[serde(default, deserialize_with = "empty_url_is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
+    pub following_url: Option<Url>,
+    #[serde(default, deserialize_with = "empty_url_is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
+    pub gists_url: Option<Url>,
+    #[serde(default, deserialize_with = "empty_url_is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
+    pub starred_url: Option<Url>,
+    #[serde(default, deserialize_with = "empty_url_is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
+    pub subscriptions_url: Option<Url>,
+    #[serde(default, deserialize_with = "empty_url_is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
+    pub organizations_url: Option<Url>,
+    #[serde(default, deserialize_with = "empty_url_is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
+    pub repos_url: Option<Url>,
+    #[serde(default, deserialize_with = "empty_url_is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
+    pub events_url: Option<Url>,
+    #[serde(default, deserialize_with = "empty_url_is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(default)]
+    pub received_events_url: Option<Url>,
     pub r#type: String,
     pub site_admin: bool,
     #[builder(default)]
