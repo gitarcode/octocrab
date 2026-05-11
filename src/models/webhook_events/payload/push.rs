@@ -12,7 +12,7 @@ pub struct PushWebhookEventPayload {
     pub base_ref: Option<String>,
     pub before: String,
     pub commits: Vec<PushWebhookEventCommit>,
-    pub compare: Url,
+    pub compare: Option<Url>,
     pub created: bool,
     pub deleted: bool,
     pub forced: bool,
